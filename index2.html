@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EC2IT – London IT Support</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <!-- Leaflet Map -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #0c1117;
+      --bg2:      #111820;
+      --bg3:      #161e28;
+      --green:    #00e5a0;
+      --green2:   #00b87a;
+      --text:     #f0f4f8;
+      --muted:    #6b8099;
+      --border:   rgba(255,255,255,0.07);
+      --card:     rgba(255,255,255,0.03);
+      --grad:     linear-gradient(135deg, #00e5a0, #0080ff);
+    }
+
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; }
+
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--green2); border-radius: 3px; }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 5%;
+      transition: background 0.4s, box-shadow 0.4s;
+    }
+    nav.scrolled {
+      background: rgba(12,17,23,0.95);
+      backdrop-filter: blur(20px);
+      box-shadow: 0 1px 0 var(--border);
+    }
+    .logo {
+      display: flex; align-items: center; gap: 0.6rem; text-decoration: none;
+    }
+    .logo-mark {
+      width: 34px; height: 34px; border-radius: 8px;
+      background: var(--grad); display: flex; align-items: center; justify-content: center;
+      font-weight: 900; font-size: 0.75rem; color: #fff; letter-spacing: -0.5px;
+    }
+    .logo-text {
+      font-size: 1.25rem; font-weight: 800; letter-spacing: -0.5px; color: var(--text);
+    }
+    .logo-text span { color: var(--green); }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a { color: var(--muted); text-decoration: none; font-size: 0.88rem; font-weight: 500; transition: color 0.2s; }
+    .nav-links a:hover { color: var(--text); }
+    .nav-right { display: flex; align-items: center; gap: 1rem; }
+    .nav-phone { font-size: 0.85rem; font-weight: 600; color: var(--green); text-decoration: none; }
+    .nav-btn {
+      padding: 0.5rem 1.2rem; border-radius: 8px; font-size: 0.85rem; font-weight: 700;
+      background: transparent; border: 1px solid var(--green); color: var(--green);
+      cursor: pointer; font-family: inherit; text-decoration: none;
+      transition: background 0.2s, color 0.2s;
+    }
+    .nav-btn:hover { background: var(--green); color: #0c1117; }
+
+    /* ── HERO SPLIT ── */
+    #hero {
+      min-height: 100vh;
+      display: grid; grid-template-columns: 1fr 1fr;
+      padding-top: 72px;
+    }
+    .hero-left {
+      display: flex; flex-direction: column; justify-content: center;
+      padding: 5rem 5% 5rem 7%;
+      position: relative;
+    }
+    .hero-left::after {
+      content: ''; position: absolute; right: 0; top: 10%; bottom: 10%;
+      width: 1px; background: var(--border);
+    }
+    .hero-tag {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.4rem 0.9rem; border-radius: 6px;
+      background: rgba(0,229,160,0.08); border: 1px solid rgba(0,229,160,0.2);
+      font-size: 0.75rem; font-weight: 700; color: var(--green);
+      text-transform: uppercase; letter-spacing: 1px;
+      margin-bottom: 2rem; width: fit-content;
+    }
+    .tag-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+    .hero-h1 {
+      font-size: clamp(2.2rem, 4vw, 4rem);
+      font-weight: 900; line-height: 1.05; letter-spacing: -2px;
+      margin-bottom: 1.5rem;
+    }
+    .hero-h1 em {
+      font-style: normal;
+      background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .hero-p {
+      font-size: 1.05rem; color: var(--muted); line-height: 1.75;
+      max-width: 460px; margin-bottom: 2.5rem;
+    }
+    .hero-btns { display: flex; gap: 0.8rem; flex-wrap: wrap; margin-bottom: 3.5rem; }
+    .btn-green {
+      padding: 0.85rem 1.8rem; border-radius: 10px; border: none; cursor: pointer;
+      background: var(--green); color: #0c1117; font-weight: 800; font-size: 0.95rem;
+      font-family: inherit; text-decoration: none;
+      transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 0 30px rgba(0,229,160,0.3);
+    }
+    .btn-green:hover { background: #00ffb3; transform: translateY(-2px); box-shadow: 0 0 40px rgba(0,229,160,0.5); }
+    .btn-outline {
+      padding: 0.85rem 1.8rem; border-radius: 10px; cursor: pointer;
+      background: transparent; color: var(--text); font-weight: 600; font-size: 0.95rem;
+      border: 1px solid var(--border); text-decoration: none; font-family: inherit;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .btn-outline:hover { border-color: rgba(0,229,160,0.4); background: rgba(0,229,160,0.05); }
+    .hero-stats { display: flex; gap: 2.5rem; }
+    .hstat-num {
+      font-size: 1.9rem; font-weight: 900; letter-spacing: -1px;
+      color: var(--green);
+    }
+    .hstat-label { font-size: 0.78rem; color: var(--muted); margin-top: 0.2rem; }
+
+    /* ── MAP SIDE ── */
+    .hero-right { position: relative; background: var(--bg2); }
+    #map {
+      width: 100%; height: 100%;
+      min-height: 600px;
+    }
+    .map-overlay {
+      position: absolute; bottom: 2rem; left: 2rem; right: 2rem; z-index: 10;
+      background: rgba(12,17,23,0.92); backdrop-filter: blur(12px);
+      border: 1px solid var(--border); border-radius: 14px;
+      padding: 1.2rem 1.5rem;
+      display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+    }
+    .map-office { display: flex; align-items: center; gap: 0.8rem; }
+    .map-pin-icon {
+      width: 36px; height: 36px; border-radius: 10px;
+      background: rgba(0,229,160,0.12); border: 1px solid rgba(0,229,160,0.25);
+      display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0;
+    }
+    .map-office-name { font-weight: 700; font-size: 0.9rem; }
+    .map-office-addr { font-size: 0.78rem; color: var(--muted); margin-top: 0.1rem; }
+    .map-badge {
+      padding: 0.35rem 0.9rem; border-radius: 100px;
+      background: rgba(0,229,160,0.1); border: 1px solid rgba(0,229,160,0.25);
+      font-size: 0.75rem; font-weight: 700; color: var(--green); white-space: nowrap;
+    }
+
+    /* ── SECTION BASE ── */
+    section { padding: 6rem 7%; }
+    .s-label {
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 2.5px;
+      text-transform: uppercase; color: var(--green); margin-bottom: 0.8rem;
+    }
+    .s-title {
+      font-size: clamp(1.7rem, 3.5vw, 2.8rem); font-weight: 800;
+      letter-spacing: -1px; line-height: 1.1; margin-bottom: 1rem;
+    }
+    .s-title em { font-style: normal; background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .s-sub { font-size: 1rem; color: var(--muted); line-height: 1.75; max-width: 540px; }
+
+    /* ── SERVICES HORIZONTAL STRIP ── */
+    #services { background: var(--bg2); padding: 5rem 0; overflow: hidden; }
+    .services-top { padding: 0 7%; margin-bottom: 3rem; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem; }
+    .services-scroll {
+      display: flex; gap: 1.2rem;
+      padding: 0.5rem 7%;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .services-scroll::-webkit-scrollbar { display: none; }
+    .svc-card {
+      flex: 0 0 260px;
+      background: var(--bg3); border: 1px solid var(--border);
+      border-radius: 16px; padding: 1.8rem;
+      transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+      cursor: default;
+    }
+    .svc-card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(0,229,160,0.3);
+      box-shadow: 0 8px 30px rgba(0,229,160,0.08);
+    }
+    .svc-num {
+      font-size: 0.7rem; font-weight: 700; color: var(--green); letter-spacing: 1px;
+      margin-bottom: 1rem; opacity: 0.7;
+    }
+    .svc-icon { font-size: 1.6rem; margin-bottom: 1rem; }
+    .svc-card h3 { font-size: 0.98rem; font-weight: 700; margin-bottom: 0.6rem; }
+    .svc-card p { font-size: 0.85rem; color: var(--muted); line-height: 1.65; }
+    .svc-arrow {
+      display: inline-flex; align-items: center; gap: 0.3rem;
+      font-size: 0.78rem; font-weight: 600; color: var(--green);
+      margin-top: 1.2rem; opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .svc-card:hover .svc-arrow { opacity: 1; }
+
+    /* ── COVERAGE MAP SECTION ── */
+    #coverage {
+      background: var(--bg); padding: 6rem 7%;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: center;
+    }
+    #coverage-map { height: 420px; border-radius: 20px; overflow: hidden; border: 1px solid var(--border); }
+    .coverage-points { display: flex; flex-direction: column; gap: 0.8rem; margin-top: 2rem; }
+    .cov-point {
+      display: flex; align-items: center; gap: 0.8rem;
+      font-size: 0.9rem; color: var(--muted);
+      padding: 0.7rem 1rem; border-radius: 10px;
+      border: 1px solid transparent;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .cov-point:hover { border-color: var(--border); background: var(--card); }
+    .cov-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
+
+    /* ── WHY / FEATURES ── */
+    #why { background: var(--bg2); }
+    .why-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1px; background: var(--border); border-radius: 20px; overflow: hidden; margin-top: 3.5rem; }
+    .why-cell {
+      background: var(--bg2); padding: 2.2rem 2rem;
+      transition: background 0.3s;
+    }
+    .why-cell:hover { background: var(--bg3); }
+    .why-cell-icon { font-size: 1.8rem; margin-bottom: 1rem; }
+    .why-cell h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .why-cell p { font-size: 0.88rem; color: var(--muted); line-height: 1.65; }
+
+    /* ── TESTIMONIALS ── */
+    #testimonials { background: var(--bg); }
+    .t-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 3rem; flex-wrap: wrap; gap: 1rem; }
+    .t-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; }
+    .t-card {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 16px; padding: 1.8rem;
+      transition: border-color 0.3s, transform 0.3s;
+      position: relative; overflow: hidden;
+    }
+    .t-card::before {
+      content: '"'; position: absolute; top: -0.5rem; right: 1.2rem;
+      font-size: 6rem; font-weight: 900; color: var(--green); opacity: 0.06;
+      line-height: 1; font-family: Georgia, serif;
+    }
+    .t-card:hover { border-color: rgba(0,229,160,0.25); transform: translateY(-3px); }
+    .t-stars { color: #f5a623; font-size: 0.8rem; letter-spacing: 2px; margin-bottom: 1rem; }
+    .t-card q { font-size: 0.9rem; color: var(--muted); line-height: 1.7; display: block; margin-bottom: 1.4rem; quotes: none; font-style: italic; }
+    .t-author { display: flex; align-items: center; gap: 0.7rem; }
+    .t-av {
+      width: 38px; height: 38px; border-radius: 50%; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 0.8rem; color: #0c1117;
+      background: var(--grad);
+    }
+    .t-name { font-weight: 700; font-size: 0.85rem; }
+    .t-co { font-size: 0.75rem; color: var(--muted); }
+
+    /* ── PARTNERS ── */
+    #partners { background: var(--bg2); text-align: center; padding: 4rem 7%; }
+    #partners p { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2px; color: var(--muted); margin-bottom: 2.5rem; }
+    .partner-grid {
+      display: flex; flex-wrap: wrap; gap: 0.8rem; justify-content: center;
+      max-width: 860px; margin: 0 auto;
+    }
+    .p-chip {
+      padding: 0.5rem 1.2rem; border-radius: 8px;
+      background: var(--bg3); border: 1px solid var(--border);
+      font-size: 0.82rem; font-weight: 600; color: var(--muted);
+      transition: color 0.2s, border-color 0.2s, background 0.2s;
+    }
+    .p-chip:hover { color: var(--green); border-color: rgba(0,229,160,0.3); background: rgba(0,229,160,0.05); }
+
+    /* ── FAQ ── */
+    #faq { background: var(--bg); }
+    .faq-layout { display: grid; grid-template-columns: 1fr 1.5fr; gap: 5rem; align-items: start; }
+    .faq-left { position: sticky; top: 6rem; }
+    .faq-item { border-bottom: 1px solid var(--border); }
+    .faq-btn {
+      width: 100%; background: none; border: none; color: var(--text);
+      padding: 1.3rem 0; text-align: left; font-size: 0.95rem; font-weight: 600;
+      cursor: pointer; display: flex; justify-content: space-between; align-items: center;
+      gap: 1rem; font-family: inherit; transition: color 0.2s;
+    }
+    .faq-btn:hover { color: var(--green); }
+    .faq-chevron {
+      width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0;
+      background: var(--bg3); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.75rem; transition: transform 0.3s, background 0.3s, border-color 0.3s;
+      color: var(--green);
+    }
+    .faq-item.open .faq-chevron { transform: rotate(45deg); background: rgba(0,229,160,0.1); border-color: rgba(0,229,160,0.3); }
+    .faq-body {
+      max-height: 0; overflow: hidden;
+      transition: max-height 0.4s ease, padding 0.3s;
+      font-size: 0.9rem; color: var(--muted); line-height: 1.75;
+    }
+    .faq-item.open .faq-body { max-height: 300px; padding-bottom: 1.3rem; }
+
+    /* ── CTA ── */
+    #cta {
+      background: var(--bg2); padding: 6rem 7%;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center;
+    }
+    .cta-left h2 {
+      font-size: clamp(1.8rem, 3.5vw, 3rem); font-weight: 900; letter-spacing: -1.5px;
+      line-height: 1.1; margin-bottom: 1rem;
+    }
+    .cta-left p { font-size: 1rem; color: var(--muted); line-height: 1.7; }
+    .cta-card {
+      background: var(--bg3); border: 1px solid var(--border);
+      border-radius: 20px; padding: 2.5rem;
+    }
+    .cta-card h3 { font-size: 1.1rem; font-weight: 800; margin-bottom: 0.5rem; }
+    .cta-card p { font-size: 0.9rem; color: var(--muted); margin-bottom: 2rem; }
+    .cta-details { display: flex; flex-direction: column; gap: 0.8rem; margin-bottom: 2rem; }
+    .cta-detail {
+      display: flex; align-items: center; gap: 0.7rem;
+      font-size: 0.9rem; color: var(--text);
+    }
+    .cta-detail-icon { color: var(--green); font-size: 1rem; width: 20px; text-align: center; }
+    .cta-detail a { color: inherit; text-decoration: none; }
+    .cta-detail a:hover { color: var(--green); }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--bg); border-top: 1px solid var(--border);
+      padding: 3.5rem 7% 2rem;
+    }
+    .footer-top { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 3rem; margin-bottom: 3rem; }
+    .footer-logo-row { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 1rem; }
+    .footer-logo-mark {
+      width: 30px; height: 30px; border-radius: 7px;
+      background: var(--grad); display: flex; align-items: center; justify-content: center;
+      font-weight: 900; font-size: 0.65rem; color: #fff;
+    }
+    .footer-logo-text { font-size: 1.1rem; font-weight: 800; }
+    .footer-logo-text span { color: var(--green); }
+    .footer-desc { font-size: 0.85rem; color: var(--muted); line-height: 1.7; margin-bottom: 1.2rem; }
+    .footer-contact-row { display: flex; align-items: center; gap: 0.5rem; font-size: 0.82rem; color: var(--muted); margin-bottom: 0.4rem; }
+    .footer-col h4 { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text); margin-bottom: 1.2rem; }
+    .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 0.55rem; }
+    .footer-col a { font-size: 0.85rem; color: var(--muted); text-decoration: none; transition: color 0.2s; }
+    .footer-col a:hover { color: var(--green); }
+    .footer-bottom { border-top: 1px solid var(--border); padding-top: 1.8rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+    .footer-bottom p { font-size: 0.78rem; color: var(--muted); }
+
+    /* ── FLOATING ── */
+    .float-btn {
+      position: fixed; bottom: 2rem; right: 2rem; z-index: 999;
+      display: flex; align-items: center; gap: 0.5rem;
+      padding: 0.8rem 1.3rem; border-radius: 100px;
+      background: var(--green); color: #0c1117;
+      font-weight: 800; font-size: 0.85rem; border: none; cursor: pointer;
+      font-family: inherit;
+      box-shadow: 0 0 30px rgba(0,229,160,0.4);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .float-btn:hover { transform: translateY(-3px); box-shadow: 0 0 45px rgba(0,229,160,0.6); }
+
+    /* ── FADE ── */
+    .fi { opacity: 0; transform: translateY(24px); transition: opacity 0.55s ease, transform 0.55s ease; }
+    .fi.v { opacity: 1; transform: none; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 1000px) {
+      #hero { grid-template-columns: 1fr; }
+      .hero-right { min-height: 400px; }
+      .hero-left::after { display: none; }
+      #coverage { grid-template-columns: 1fr; }
+      .t-grid { grid-template-columns: 1fr 1fr; }
+      #cta { grid-template-columns: 1fr; }
+      .footer-top { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 700px) {
+      .t-grid { grid-template-columns: 1fr; }
+      .nav-links { display: none; }
+      .faq-layout { grid-template-columns: 1fr; }
+      .faq-left { position: static; }
+      .footer-top { grid-template-columns: 1fr; }
+      section { padding: 4rem 5%; }
+    }
+
+    /* Custom map marker */
+    .custom-marker {
+      background: #00e5a0; width: 14px; height: 14px;
+      border-radius: 50%; border: 3px solid #fff;
+      box-shadow: 0 0 0 3px rgba(0,229,160,0.4), 0 0 20px rgba(0,229,160,0.6);
+    }
+    .leaflet-popup-content-wrapper {
+      background: #111820; border: 1px solid rgba(0,229,160,0.3);
+      border-radius: 12px; color: #f0f4f8; box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+    }
+    .leaflet-popup-tip { background: #111820; }
+    .leaflet-popup-content { margin: 14px 18px; font-family: 'Inter', sans-serif; }
+    .popup-title { font-weight: 700; font-size: 0.9rem; margin-bottom: 0.3rem; color: #00e5a0; }
+    .popup-addr { font-size: 0.8rem; color: #6b8099; }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav id="nav">
+    <a href="#" class="logo">
+      <div class="logo-mark">EC2</div>
+      <span class="logo-text">EC2<span>IT</span></span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#services">Services</a></li>
+      <li><a href="#coverage">Coverage</a></li>
+      <li><a href="#why">Why Us</a></li>
+      <li><a href="#testimonials">Clients</a></li>
+      <li><a href="#faq">FAQ</a></li>
+    </ul>
+    <div class="nav-right">
+      <a href="tel:02081424660" class="nav-phone">020 8142 4660</a>
+      <a href="#cta" class="nav-btn">Get in Touch</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="hero-left">
+      <div class="hero-tag fi">
+        <span class="tag-dot"></span>
+        London-Based &nbsp;·&nbsp; Always Available
+      </div>
+      <h1 class="hero-h1 fi">
+        IT Support<br>Built for<br><em>London SMEs</em>
+      </h1>
+      <p class="hero-p fi">
+        EC2IT provides expert, proactive IT support so your business runs without disruption. From the City to across London — we're always close by and always on.
+      </p>
+      <div class="hero-btns fi">
+        <a href="#cta" class="btn-green">Schedule a Free Call</a>
+        <a href="#services" class="btn-outline">Our Services</a>
+      </div>
+      <div class="hero-stats fi">
+        <div>
+          <div class="hstat-num">90<span style="font-size:1.1rem">min</span></div>
+          <div class="hstat-label">SLA Response</div>
+        </div>
+        <div>
+          <div class="hstat-num">24/7</div>
+          <div class="hstat-label">Systems Support</div>
+        </div>
+        <div>
+          <div class="hstat-num">500+</div>
+          <div class="hstat-label">Users Supported</div>
+        </div>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div id="map"></div>
+      <div class="map-overlay">
+        <div class="map-office">
+          <div class="map-pin-icon">📍</div>
+          <div>
+            <div class="map-office-name">EC2IT Head Office</div>
+            <div class="map-office-addr">69 Old Broad Street, London, EC2M 1QS</div>
+          </div>
+        </div>
+        <div class="map-badge">● Live Support</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SERVICES -->
+  <section id="services">
+    <div class="services-top fi">
+      <div>
+        <div class="s-label">What We Do</div>
+        <h2 class="s-title">Every IT Need,<br><em>One Partner</em></h2>
+      </div>
+      <p style="color:var(--muted); font-size:0.9rem; max-width:340px; line-height:1.7;">
+        From everyday helpdesk calls to major infrastructure projects — we handle all of it so your team can focus on what matters.
+      </p>
+    </div>
+    <div class="services-scroll">
+      <div class="svc-card fi">
+        <div class="svc-num">01</div>
+        <div class="svc-icon">🖥️</div>
+        <h3>End User Helpdesk</h3>
+        <p>Fast, friendly support for your people — remote or on-site, no queues, no frustration.</p>
+        <span class="svc-arrow">Learn more →</span>
+      </div>
+      <div class="svc-card fi">
+        <div class="svc-num">02</div>
+        <div class="svc-icon">⚙️</div>
+        <h3>24/7 Systems Support</h3>
+        <p>Round-the-clock monitoring keeps critical infrastructure online, day or night.</p>
+        <span class="svc-arrow">Learn more →</span>
+      </div>
+      <div class="svc-card fi">
+        <div class="svc-num">03</div>
+        <div class="svc-icon">🔒</div>
+        <h3>Security & Backups</h3>
+        <p>Enterprise-grade data protection, disaster recovery, and compliance monitoring.</p>
+        <span class="svc-arrow">Learn more →</span>
+      </div>
+      <div class="svc-card fi">
+        <div class="svc-num">04</div>
+        <div class="svc-icon">☁️</div>
+        <h3>Office 365 & Cloud</h3>
+        <p>Seamless Microsoft 365 migration, management and optimisation for your team.</p>
+        <span class="svc-arrow">Learn more →</span>
+      </div>
+      <div class="svc-card fi">
+        <div class="svc-num">05</div>
+        <div class="svc-icon">📦</div>
+        <h3>Purchasing & Licensing</h3>
+        <p>Right hardware and software, best prices — we manage it all end-to-end.</p>
+        <span class="svc-arrow">Learn more →</span>
+      </div>
+      <div class="svc-card fi">
+        <div class="svc-num">06</div>
+        <div class="svc-icon">🚀</div>
+        <h3>IT Project Delivery</h3>
+        <p>Office moves, upgrades, new deployments — on time and on budget, every time.</p>
+        <span class="svc-arrow">Learn more →</span>
+      </div>
+      <div class="svc-card fi">
+        <div class="svc-num">07</div>
+        <div class="svc-icon">🔗</div>
+        <h3>Service Integration</h3>
+        <p>We slot into your existing IT team or act as your fully outsourced department.</p>
+        <span class="svc-arrow">Learn more →</span>
+      </div>
+      <div class="svc-card fi">
+        <div class="svc-num">08</div>
+        <div class="svc-icon">📊</div>
+        <h3>IT Management</h3>
+        <p>Strategic oversight, asset tracking and reporting — keeping IT aligned to your goals.</p>
+        <span class="svc-arrow">Learn more →</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- COVERAGE MAP -->
+  <section id="coverage">
+    <div id="coverage-map"></div>
+    <div>
+      <div class="s-label fi">Coverage</div>
+      <h2 class="s-title fi">Supporting Businesses<br>Across <em>London</em></h2>
+      <p class="s-sub fi">Based in the City of London, we provide on-site support throughout the capital — with remote support available anywhere.</p>
+      <div class="coverage-points fi">
+        <div class="cov-point"><span class="cov-dot"></span> City of London & Canary Wharf</div>
+        <div class="cov-point"><span class="cov-dot"></span> West End & Mayfair</div>
+        <div class="cov-point"><span class="cov-dot"></span> Shoreditch & Tech City</div>
+        <div class="cov-point"><span class="cov-dot"></span> Southwark & London Bridge</div>
+        <div class="cov-point"><span class="cov-dot"></span> Victoria & Westminster</div>
+        <div class="cov-point"><span class="cov-dot"></span> Remote support UK-wide</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHY EC2IT -->
+  <section id="why">
+    <div style="max-width:600px;" class="fi">
+      <div class="s-label">Why EC2IT</div>
+      <h2 class="s-title">The Difference Is<br><em>How We Work</em></h2>
+      <p class="s-sub">No tiers, no scripts, no runaround. Just experienced engineers who care about keeping your business running.</p>
+    </div>
+    <div class="why-grid">
+      <div class="why-cell fi">
+        <div class="why-cell-icon">⚡</div>
+        <h3>90-Minute SLA</h3>
+        <p>Guaranteed response within 90 minutes. We track our response times and hold ourselves accountable.</p>
+      </div>
+      <div class="why-cell fi">
+        <div class="why-cell-icon">🎯</div>
+        <h3>No Tiered Support</h3>
+        <p>You speak directly to an engineer who can fix your problem — no bouncing between levels of support.</p>
+      </div>
+      <div class="why-cell fi">
+        <div class="why-cell-icon">🏙️</div>
+        <h3>London Specialists</h3>
+        <p>We understand what London SMEs need. We've supported businesses in the City for over 15 years.</p>
+      </div>
+      <div class="why-cell fi">
+        <div class="why-cell-icon">🛡️</div>
+        <h3>Proactive Monitoring</h3>
+        <p>We catch issues before they affect your team — monitoring your systems around the clock.</p>
+      </div>
+      <div class="why-cell fi">
+        <div class="why-cell-icon">💼</div>
+        <h3>Dedicated Account Manager</h3>
+        <p>Someone who knows your business, your team, and your IT environment inside out.</p>
+      </div>
+      <div class="why-cell fi">
+        <div class="why-cell-icon">✅</div>
+        <h3>Satisfaction Guarantee</h3>
+        <p>We're not satisfied until you are. Transparent pricing, honest advice, no hidden costs.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section id="testimonials">
+    <div class="t-header fi">
+      <div>
+        <div class="s-label">Client Stories</div>
+        <h2 class="s-title">What Our <em>Clients Say</em></h2>
+      </div>
+    </div>
+    <div class="t-grid">
+      <div class="t-card fi">
+        <div class="t-stars">★★★★★</div>
+        <q>Knowledgeable, attentive, polite and understand our business needs completely.</q>
+        <div class="t-author">
+          <div class="t-av">MB</div>
+          <div><div class="t-name">Marks Barfield Architects</div><div class="t-co">Architecture & Design</div></div>
+        </div>
+      </div>
+      <div class="t-card fi">
+        <div class="t-stars">★★★★★</div>
+        <q>Peace of mind that we can still get IT help no matter what time — invaluable.</q>
+        <div class="t-author">
+          <div class="t-av">BF</div>
+          <div><div class="t-name">B|FIN</div><div class="t-co">Financial Services</div></div>
+        </div>
+      </div>
+      <div class="t-card fi">
+        <div class="t-stars">★★★★★</div>
+        <q>A plethora of knowledge and proficiency — they understand our company culture.</q>
+        <div class="t-author">
+          <div class="t-av">MS</div>
+          <div><div class="t-name">MuleSoft</div><div class="t-co">Technology</div></div>
+        </div>
+      </div>
+      <div class="t-card fi">
+        <div class="t-stars">★★★★★</div>
+        <q>Exceptional service over three years. They feel like part of our own IT team.</q>
+        <div class="t-author">
+          <div class="t-av">SP</div>
+          <div><div class="t-name">Savannah Petroleum</div><div class="t-co">Energy</div></div>
+        </div>
+      </div>
+      <div class="t-card fi">
+        <div class="t-stars">★★★★★</div>
+        <q>Excellent and professional — all issues dealt with quickly and with minimal disruption.</q>
+        <div class="t-author">
+          <div class="t-av">IE</div>
+          <div><div class="t-name">InterExec Ltd</div><div class="t-co">Executive Search</div></div>
+        </div>
+      </div>
+      <div class="t-card fi">
+        <div class="t-stars">★★★★★</div>
+        <q>Everything just works. We have full confidence planning our IT around EC2IT.</q>
+        <div class="t-author">
+          <div class="t-av">M3</div>
+          <div><div class="t-name">M3 Consulting</div><div class="t-co">Management Consulting</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PARTNERS -->
+  <section id="partners">
+    <p>Technology Partners & Vendors</p>
+    <div class="partner-grid">
+      <span class="p-chip">Microsoft</span><span class="p-chip">Apple</span>
+      <span class="p-chip">Cisco</span><span class="p-chip">Dell</span>
+      <span class="p-chip">VMware</span><span class="p-chip">Adobe</span>
+      <span class="p-chip">Watchguard</span><span class="p-chip">Avaya</span>
+      <span class="p-chip">Xerox</span><span class="p-chip">Lenovo</span>
+      <span class="p-chip">ESET</span><span class="p-chip">Barracuda</span>
+      <span class="p-chip">Netgear</span><span class="p-chip">Sonicwall</span>
+      <span class="p-chip">APC</span><span class="p-chip">Canon</span>
+      <span class="p-chip">TeamViewer</span>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq">
+    <div class="faq-layout">
+      <div class="faq-left fi">
+        <div class="s-label">FAQ</div>
+        <h2 class="s-title">Common<br><em>Questions</em></h2>
+        <p class="s-sub" style="margin-top:1rem;">Can't find what you're looking for? Give us a call.</p>
+        <a href="tel:02081424660" class="btn-green" style="display:inline-block; margin-top:2rem;">020 8142 4660</a>
+      </div>
+      <div>
+        <div class="faq-item fi">
+          <button class="faq-btn">How quickly will you respond to issues?<span class="faq-chevron">+</span></button>
+          <div class="faq-body">We guarantee a response within 90 minutes. Most issues are resolved remotely in the same session. For on-site needs, we'll have an engineer with you same or next day depending on urgency.</div>
+        </div>
+        <div class="faq-item fi">
+          <button class="faq-btn">Do you use a tiered support structure?<span class="faq-chevron">+</span></button>
+          <div class="faq-body">No. You speak directly with an engineer who has the expertise and authority to fix your problem — no scripted first-line gatekeeping, no bouncing around.</div>
+        </div>
+        <div class="faq-item fi">
+          <button class="faq-btn">What size businesses do you work with?<span class="faq-chevron">+</span></button>
+          <div class="faq-body">We primarily support small and medium-sized businesses across London. Our services are designed to give SMEs the same quality of IT support usually reserved for much larger enterprises.</div>
+        </div>
+        <div class="faq-item fi">
+          <button class="faq-btn">Can you support our existing IT team?<span class="faq-chevron">+</span></button>
+          <div class="faq-body">Absolutely. We offer flexible models — from fully outsourced IT to supplementary support. We integrate smoothly with your existing workflows and staff.</div>
+        </div>
+        <div class="faq-item fi">
+          <button class="faq-btn">Is support truly available 24/7?<span class="faq-chevron">+</span></button>
+          <div class="faq-body">Yes. Our systems monitoring and critical support runs around the clock — including weekends and bank holidays. For non-critical issues, our standard hours are Monday–Friday.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section id="cta">
+    <div class="cta-left fi">
+      <div class="s-label">Get Started</div>
+      <h2>Ready to Take Control of Your IT?</h2>
+      <p style="margin-top:1rem;">Schedule a free, no-obligation consultation. We'll listen to your challenges and explain exactly how we can help.</p>
+    </div>
+    <div class="cta-card fi">
+      <h3>Contact EC2IT</h3>
+      <p>Reach us however you prefer — we're always available.</p>
+      <div class="cta-details">
+        <div class="cta-detail"><span class="cta-detail-icon">📞</span><a href="tel:02081424660">020 8142 4660</a></div>
+        <div class="cta-detail"><span class="cta-detail-icon">✉️</span><a href="mailto:hello@ec2it.co.uk">hello@ec2it.co.uk</a></div>
+        <div class="cta-detail"><span class="cta-detail-icon">📍</span>69 Old Broad Street, London, EC2M 1QS</div>
+        <div class="cta-detail"><span class="cta-detail-icon">🕐</span>24/7 for critical support</div>
+      </div>
+      <a href="mailto:hello@ec2it.co.uk" class="btn-green" style="width:100%; text-align:center; display:block;">Send Us a Message</a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-top">
+      <div>
+        <div class="footer-logo-row">
+          <div class="footer-logo-mark">EC2</div>
+          <span class="footer-logo-text">EC2<span>IT</span></span>
+        </div>
+        <p class="footer-desc">London's trusted IT support partner. Expert, responsive, and always available for growing businesses.</p>
+        <div class="footer-contact-row">📍 69 Old Broad Street, London, EC2M 1QS</div>
+        <div class="footer-contact-row">📞 020 8142 4660</div>
+        <div class="footer-contact-row">✉️ hello@ec2it.co.uk</div>
+      </div>
+      <div class="footer-col">
+        <h4>Services</h4>
+        <ul>
+          <li><a href="#">Helpdesk Support</a></li>
+          <li><a href="#">24/7 Monitoring</a></li>
+          <li><a href="#">Cloud & Microsoft 365</a></li>
+          <li><a href="#">Security & Backups</a></li>
+          <li><a href="#">IT Projects</a></li>
+          <li><a href="#">Purchasing</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <ul>
+          <li><a href="#">About Us</a></li>
+          <li><a href="#">News & Blog</a></li>
+          <li><a href="#">Testimonials</a></li>
+          <li><a href="#">Remote Support</a></li>
+          <li><a href="#">FAQ</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <ul>
+          <li><a href="#">Schedule a Call</a></li>
+          <li><a href="#">Get a Quote</a></li>
+          <li><a href="#">LinkedIn</a></li>
+          <li><a href="#">Twitter</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2024 EC2 IT Ltd. All rights reserved. Registered in England & Wales.</p>
+      <p>Privacy Policy · Terms of Service</p>
+    </div>
+  </footer>
+
+  <!-- FLOATING BUTTON -->
+  <button class="float-btn" onclick="alert('Remote support session would launch here')">
+    🖥️ Get Support
+  </button>
+
+  <script>
+    // ── NAV SCROLL ──
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 40));
+
+    // ── HERO MAP ──
+    const heroMap = L.map('map', { zoomControl: false, scrollWheelZoom: false }).setView([51.5155, -0.0864], 14);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+      attribution: '© OpenStreetMap contributors © CARTO',
+      maxZoom: 19
+    }).addTo(heroMap);
+
+    const pulsingIcon = L.divIcon({
+      className: '',
+      html: '<div class="custom-marker"></div>',
+      iconSize: [14, 14],
+      iconAnchor: [7, 7],
+      popupAnchor: [0, -14]
+    });
+
+    L.marker([51.5155, -0.0864], { icon: pulsingIcon })
+      .addTo(heroMap)
+      .bindPopup('<div class="popup-title">EC2IT Head Office</div><div class="popup-addr">69 Old Broad Street<br>London, EC2M 1QS</div>')
+      .openPopup();
+
+    // ── COVERAGE MAP ──
+    const covMap = L.map('coverage-map', { zoomControl: false, scrollWheelZoom: false, dragging: false }).setView([51.505, -0.11], 11);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+      attribution: '© OpenStreetMap contributors © CARTO',
+      maxZoom: 19
+    }).addTo(covMap);
+
+    // Coverage area pins
+    const pins = [
+      { lat: 51.5155, lng: -0.0864, name: 'EC2IT HQ – City of London' },
+      { lat: 51.505, lng: -0.0235, name: 'Canary Wharf' },
+      { lat: 51.514, lng: -0.131, name: 'West End' },
+      { lat: 51.5254, lng: -0.0782, name: 'Shoreditch & Tech City' },
+      { lat: 51.5045, lng: -0.088, name: 'London Bridge & Southwark' },
+      { lat: 51.4975, lng: -0.135, name: 'Victoria & Westminster' },
+    ];
+    pins.forEach(p => {
+      L.marker([p.lat, p.lng], { icon: pulsingIcon })
+        .addTo(covMap)
+        .bindPopup(`<div class="popup-title">${p.name}</div>`);
+    });
+
+    // ── FADE IN OBSERVER ──
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e, i) => {
+        if (e.isIntersecting) {
+          setTimeout(() => e.target.classList.add('v'), i * 70);
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.08 });
+    document.querySelectorAll('.fi').forEach(el => io.observe(el));
+
+    // ── FAQ ──
+    document.querySelectorAll('.faq-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const item = btn.parentElement;
+        const isOpen = item.classList.contains('open');
+        document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+        if (!isOpen) item.classList.add('open');
+      });
+    });
+
+    // ── SERVICE SCROLL DRAG ──
+    const scroll = document.querySelector('.services-scroll');
+    let isDown = false, startX, scrollLeft;
+    scroll.addEventListener('mousedown', e => { isDown = true; startX = e.pageX - scroll.offsetLeft; scrollLeft = scroll.scrollLeft; });
+    scroll.addEventListener('mouseleave', () => isDown = false);
+    scroll.addEventListener('mouseup', () => isDown = false);
+    scroll.addEventListener('mousemove', e => {
+      if (!isDown) return;
+      e.preventDefault();
+      scroll.scrollLeft = scrollLeft - (e.pageX - scroll.offsetLeft - startX);
+    });
+  </script>
+</body>
+</html>

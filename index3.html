@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EC2IT – Trusted IT Services London</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --white:   #ffffff;
+      --off:     #f5f7ff;
+      --blue:    #0057ff;
+      --blue2:   #003ecc;
+      --cyan:    #00b4ff;
+      --text:    #0d1b2e;
+      --sub:     #4a6080;
+      --border:  #e2e8f5;
+      --grad:    linear-gradient(135deg, #0057ff, #00b4ff);
+      --gradsoft: linear-gradient(135deg, rgba(0,87,255,0.08), rgba(0,180,255,0.06));
+    }
+
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', sans-serif; background: var(--white); color: var(--text); overflow-x: hidden; }
+
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: var(--off); }
+    ::-webkit-scrollbar-thumb { background: var(--blue); border-radius: 3px; }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.1rem 6%;
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-size: 1.4rem; font-weight: 900; letter-spacing: -0.5px;
+      background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a { color: var(--sub); text-decoration: none; font-size: 0.88rem; font-weight: 500; transition: color 0.2s; }
+    .nav-links a:hover { color: var(--blue); }
+    .nav-cta {
+      padding: 0.55rem 1.4rem; border-radius: 8px;
+      background: var(--blue); color: #fff; font-weight: 700; font-size: 0.88rem;
+      text-decoration: none; transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 16px rgba(0,87,255,0.3);
+    }
+    .nav-cta:hover { background: var(--blue2); transform: translateY(-1px); box-shadow: 0 6px 24px rgba(0,87,255,0.4); }
+
+    /* ── HERO ── */
+    #hero {
+      min-height: 100vh; padding: 9rem 6% 6rem;
+      display: flex; align-items: center;
+      position: relative; overflow: hidden;
+      background: var(--white);
+    }
+    /* Background blobs */
+    .blob {
+      position: absolute; border-radius: 50%; filter: blur(80px); pointer-events: none; z-index: 0;
+    }
+    .blob-1 { width: 600px; height: 600px; background: rgba(0,87,255,0.08); top: -150px; right: -100px; }
+    .blob-2 { width: 400px; height: 400px; background: rgba(0,180,255,0.07); bottom: -100px; left: 10%; }
+    .hero-inner { position: relative; z-index: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: center; max-width: 1200px; margin: 0 auto; width: 100%; }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.4rem 1rem; border-radius: 100px;
+      background: rgba(0,87,255,0.07); border: 1px solid rgba(0,87,255,0.15);
+      font-size: 0.75rem; font-weight: 700; color: var(--blue); letter-spacing: 0.5px;
+      margin-bottom: 1.8rem; width: fit-content;
+    }
+    .live-dot { width: 7px; height: 7px; border-radius: 50%; background: #22c55e; animation: blink 2s infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+    .hero-h1 {
+      font-size: clamp(2.8rem, 5vw, 4.5rem); font-weight: 900;
+      line-height: 1.02; letter-spacing: -2.5px; margin-bottom: 1.5rem;
+    }
+    .hero-h1 span { background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .hero-p { font-size: 1.1rem; color: var(--sub); line-height: 1.75; margin-bottom: 2.5rem; max-width: 480px; }
+    .hero-btns { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 3rem; }
+    .btn-blue {
+      padding: 0.9rem 2rem; border-radius: 10px; border: none; cursor: pointer;
+      background: var(--blue); color: #fff; font-weight: 700; font-size: 0.95rem;
+      text-decoration: none; font-family: inherit;
+      box-shadow: 0 6px 24px rgba(0,87,255,0.35);
+      transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+    }
+    .btn-blue:hover { background: var(--blue2); transform: translateY(-2px); box-shadow: 0 10px 32px rgba(0,87,255,0.45); }
+    .btn-white {
+      padding: 0.9rem 2rem; border-radius: 10px; cursor: pointer;
+      background: var(--white); color: var(--text); font-weight: 600; font-size: 0.95rem;
+      border: 1.5px solid var(--border); text-decoration: none; font-family: inherit;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .btn-white:hover { border-color: var(--blue); color: var(--blue); background: rgba(0,87,255,0.03); }
+    .hero-trust { display: flex; align-items: center; gap: 1rem; }
+    .trust-avatars { display: flex; }
+    .trust-av {
+      width: 34px; height: 34px; border-radius: 50%; border: 2px solid var(--white);
+      background: var(--grad); display: flex; align-items: center; justify-content: center;
+      font-size: 0.7rem; font-weight: 800; color: #fff; margin-left: -8px;
+    }
+    .trust-av:first-child { margin-left: 0; }
+    .trust-text { font-size: 0.82rem; color: var(--sub); }
+    .trust-text strong { color: var(--text); }
+
+    /* Hero right - feature card stack */
+    .hero-cards { position: relative; height: 480px; }
+    .hc {
+      position: absolute; background: var(--white); border: 1.5px solid var(--border);
+      border-radius: 18px; padding: 1.5rem 1.8rem;
+      box-shadow: 0 8px 40px rgba(0,30,100,0.08);
+    }
+    .hc-1 { top: 0; left: 0; right: 60px; }
+    .hc-2 { top: 130px; left: 40px; right: 0; }
+    .hc-3 { top: 270px; left: 10px; right: 30px; }
+    .hc-icon { font-size: 1.5rem; margin-bottom: 0.7rem; }
+    .hc h4 { font-size: 0.95rem; font-weight: 800; margin-bottom: 0.3rem; }
+    .hc p { font-size: 0.82rem; color: var(--sub); line-height: 1.55; }
+    .hc-bar { height: 4px; border-radius: 2px; background: var(--border); margin-top: 0.9rem; overflow: hidden; }
+    .hc-bar-fill { height: 100%; border-radius: 2px; background: var(--grad); }
+    .hc-stat { display: flex; align-items: baseline; gap: 0.4rem; margin-top: 0.5rem; }
+    .hc-stat-num { font-size: 1.6rem; font-weight: 900; background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .hc-stat-label { font-size: 0.78rem; color: var(--sub); }
+
+    /* ── SECTION ── */
+    section { padding: 6rem 6%; }
+    .s-label { font-size: 0.72rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--blue); margin-bottom: 0.8rem; }
+    .s-title { font-size: clamp(1.8rem, 3.5vw, 2.9rem); font-weight: 800; letter-spacing: -1.5px; line-height: 1.1; margin-bottom: 1rem; }
+    .s-title span { background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .s-sub { font-size: 1rem; color: var(--sub); line-height: 1.75; max-width: 520px; }
+    .section-header-row { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 3.5rem; flex-wrap: wrap; gap: 2rem; }
+
+    /* ── SERVICES ── */
+    #services { background: var(--off); }
+    .services-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; }
+    .svc {
+      background: var(--white); border: 1.5px solid var(--border);
+      border-radius: 16px; padding: 2rem;
+      transition: border-color 0.3s, box-shadow 0.3s, transform 0.3s;
+    }
+    .svc:hover { border-color: var(--blue); box-shadow: 0 8px 32px rgba(0,87,255,0.1); transform: translateY(-4px); }
+    .svc-icon-wrap {
+      width: 48px; height: 48px; border-radius: 12px;
+      background: var(--gradsoft); border: 1.5px solid rgba(0,87,255,0.15);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem; margin-bottom: 1.2rem;
+    }
+    .svc h3 { font-size: 0.98rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .svc p { font-size: 0.86rem; color: var(--sub); line-height: 1.65; }
+    .svc-link { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.8rem; font-weight: 700; color: var(--blue); margin-top: 1rem; text-decoration: none; opacity: 0; transition: opacity 0.2s; }
+    .svc:hover .svc-link { opacity: 1; }
+
+    /* ── STATS BAND ── */
+    #stats-band {
+      background: var(--blue); padding: 3.5rem 6%;
+      display: flex; justify-content: center; gap: 0; flex-wrap: wrap;
+    }
+    .stat-block {
+      text-align: center; padding: 0 4rem;
+      border-right: 1px solid rgba(255,255,255,0.15);
+    }
+    .stat-block:last-child { border-right: none; }
+    .stat-num { font-size: 2.8rem; font-weight: 900; color: #fff; letter-spacing: -2px; }
+    .stat-num sub { font-size: 1.2rem; }
+    .stat-label { font-size: 0.8rem; font-weight: 500; color: rgba(255,255,255,0.65); text-transform: uppercase; letter-spacing: 1px; margin-top: 0.3rem; }
+
+    /* ── WHY ── */
+    #why { background: var(--white); }
+    .why-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.2rem; margin-top: 3.5rem; }
+    .why-card {
+      display: flex; align-items: flex-start; gap: 1rem;
+      background: var(--off); border: 1.5px solid var(--border);
+      border-radius: 14px; padding: 1.6rem;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+    .why-card:hover { border-color: rgba(0,87,255,0.3); box-shadow: 0 4px 20px rgba(0,87,255,0.07); }
+    .why-icon {
+      width: 44px; height: 44px; min-width: 44px; border-radius: 11px;
+      background: var(--blue); display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem;
+    }
+    .why-card h3 { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.4rem; }
+    .why-card p { font-size: 0.86rem; color: var(--sub); line-height: 1.6; }
+
+    /* ── TESTIMONIALS ── */
+    #testimonials { background: var(--off); }
+    .t-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; }
+    .t-card {
+      background: var(--white); border: 1.5px solid var(--border);
+      border-radius: 16px; padding: 1.8rem;
+      transition: box-shadow 0.3s, transform 0.3s, border-color 0.3s;
+    }
+    .t-card:hover { box-shadow: 0 8px 32px rgba(0,87,255,0.1); transform: translateY(-3px); border-color: rgba(0,87,255,0.2); }
+    .t-stars { color: #f59e0b; font-size: 0.85rem; margin-bottom: 1rem; }
+    .t-card q { font-size: 0.9rem; color: var(--sub); line-height: 1.7; display: block; margin-bottom: 1.4rem; quotes: none; font-style: italic; }
+    .t-author { display: flex; align-items: center; gap: 0.7rem; }
+    .t-av { width: 38px; height: 38px; border-radius: 50%; background: var(--grad); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.75rem; color: #fff; flex-shrink: 0; }
+    .t-name { font-weight: 700; font-size: 0.88rem; color: var(--text); }
+    .t-co { font-size: 0.76rem; color: var(--sub); }
+
+    /* ── PARTNERS ── */
+    #partners { background: var(--white); text-align: center; padding: 4rem 6%; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    #partners p { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2px; color: var(--sub); margin-bottom: 2rem; }
+    .partner-row { display: flex; flex-wrap: wrap; gap: 0.7rem; justify-content: center; max-width: 900px; margin: 0 auto; }
+    .p-chip {
+      padding: 0.45rem 1.1rem; border-radius: 8px;
+      background: var(--off); border: 1.5px solid var(--border);
+      font-size: 0.82rem; font-weight: 600; color: var(--sub);
+      transition: color 0.2s, border-color 0.2s, background 0.2s;
+    }
+    .p-chip:hover { color: var(--blue); border-color: rgba(0,87,255,0.3); background: rgba(0,87,255,0.04); }
+
+    /* ── FAQ ── */
+    #faq { background: var(--off); }
+    .faq-wrap { max-width: 720px; margin: 3rem auto 0; }
+    .faq-item { background: var(--white); border: 1.5px solid var(--border); border-radius: 12px; margin-bottom: 0.8rem; overflow: hidden; transition: border-color 0.3s; }
+    .faq-item.open { border-color: rgba(0,87,255,0.3); }
+    .faq-btn { width: 100%; background: none; border: none; color: var(--text); padding: 1.2rem 1.5rem; text-align: left; font-size: 0.95rem; font-weight: 600; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 1rem; font-family: inherit; }
+    .faq-btn:hover { color: var(--blue); }
+    .faq-icon { width: 24px; height: 24px; border-radius: 50%; background: var(--off); border: 1.5px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 1rem; color: var(--blue); transition: transform 0.3s, background 0.3s; flex-shrink: 0; }
+    .faq-item.open .faq-icon { transform: rotate(45deg); background: rgba(0,87,255,0.08); }
+    .faq-body { max-height: 0; overflow: hidden; transition: max-height 0.4s ease, padding 0.3s; font-size: 0.9rem; color: var(--sub); line-height: 1.75; padding: 0 1.5rem; }
+    .faq-item.open .faq-body { max-height: 300px; padding: 0 1.5rem 1.4rem; }
+
+    /* ── CTA ── */
+    #cta {
+      background: var(--blue); padding: 6rem 6%; text-align: center;
+      position: relative; overflow: hidden;
+    }
+    #cta::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 30% 50%, rgba(0,180,255,0.3), transparent 60%); }
+    #cta h2 { font-size: clamp(2rem, 4vw, 3.2rem); font-weight: 900; color: #fff; letter-spacing: -1.5px; margin-bottom: 1rem; position: relative; }
+    #cta p { color: rgba(255,255,255,0.7); font-size: 1.05rem; margin-bottom: 2.5rem; position: relative; }
+    .cta-btns { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; position: relative; }
+    .btn-white-solid { padding: 0.9rem 2rem; border-radius: 10px; border: none; cursor: pointer; background: #fff; color: var(--blue); font-weight: 800; font-size: 0.95rem; text-decoration: none; font-family: inherit; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 6px 24px rgba(0,0,0,0.15); }
+    .btn-white-solid:hover { transform: translateY(-2px); box-shadow: 0 10px 32px rgba(0,0,0,0.2); }
+    .btn-outline-white { padding: 0.9rem 2rem; border-radius: 10px; cursor: pointer; background: transparent; color: #fff; font-weight: 600; font-size: 0.95rem; border: 1.5px solid rgba(255,255,255,0.4); text-decoration: none; font-family: inherit; transition: background 0.2s, border-color 0.2s; }
+    .btn-outline-white:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.7); }
+
+    /* ── FOOTER ── */
+    footer { background: #0a1628; color: #fff; padding: 4rem 6% 2rem; }
+    .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 3rem; margin-bottom: 3rem; }
+    .footer-logo { font-size: 1.3rem; font-weight: 900; letter-spacing: -0.5px; background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 1rem; display: block; }
+    .footer-desc { font-size: 0.85rem; color: rgba(255,255,255,0.45); line-height: 1.7; margin-bottom: 1.2rem; }
+    .footer-info { font-size: 0.82rem; color: rgba(255,255,255,0.4); margin-bottom: 0.4rem; display: flex; align-items: center; gap: 0.5rem; }
+    .footer-col h4 { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: rgba(255,255,255,0.5); margin-bottom: 1.2rem; }
+    .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 0.6rem; }
+    .footer-col a { font-size: 0.85rem; color: rgba(255,255,255,0.4); text-decoration: none; transition: color 0.2s; }
+    .footer-col a:hover { color: #fff; }
+    .footer-bottom { border-top: 1px solid rgba(255,255,255,0.08); padding-top: 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+    .footer-bottom p { font-size: 0.78rem; color: rgba(255,255,255,0.3); }
+
+    /* ── FLOAT ── */
+    .float-btn { position: fixed; bottom: 2rem; right: 2rem; z-index: 999; display: flex; align-items: center; gap: 0.5rem; padding: 0.8rem 1.4rem; border-radius: 100px; background: var(--blue); color: #fff; font-weight: 700; font-size: 0.88rem; border: none; cursor: pointer; font-family: inherit; box-shadow: 0 6px 24px rgba(0,87,255,0.4); transition: transform 0.2s, box-shadow 0.2s; }
+    .float-btn:hover { transform: translateY(-3px); box-shadow: 0 10px 32px rgba(0,87,255,0.5); }
+
+    /* ── FADE ── */
+    .fi { opacity: 0; transform: translateY(20px); transition: opacity 0.5s ease, transform 0.5s ease; }
+    .fi.v { opacity: 1; transform: none; }
+
+    @media (max-width: 900px) {
+      .hero-inner { grid-template-columns: 1fr; }
+      .hero-cards { display: none; }
+      .services-grid { grid-template-columns: 1fr 1fr; }
+      .t-grid { grid-template-columns: 1fr 1fr; }
+      .why-grid { grid-template-columns: 1fr; }
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+      .stat-block { padding: 1rem 2rem; border-right: none; border-bottom: 1px solid rgba(255,255,255,0.15); }
+      .nav-links { display: none; }
+    }
+    @media (max-width: 600px) {
+      .services-grid, .t-grid { grid-template-columns: 1fr; }
+      .footer-grid { grid-template-columns: 1fr; }
+      section { padding: 4rem 5%; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <span class="nav-logo">EC2IT</span>
+    <ul class="nav-links">
+      <li><a href="#services">Services</a></li>
+      <li><a href="#why">Why Us</a></li>
+      <li><a href="#testimonials">Clients</a></li>
+      <li><a href="#faq">FAQ</a></li>
+    </ul>
+    <a href="#cta" class="nav-cta">Schedule a Call</a>
+  </nav>
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="hero-inner">
+      <div>
+        <div class="hero-badge fi"><span class="live-dot"></span> London IT Support · Always On</div>
+        <h1 class="hero-h1 fi">Trusted IT<br>Support for<br><span>London Businesses</span></h1>
+        <p class="hero-p fi">EC2IT delivers expert, proactive IT support for London SMEs — helpdesk, cloud, security and more. We keep your business running so you can focus on growing it.</p>
+        <div class="hero-btns fi">
+          <a href="#cta" class="btn-blue">Schedule a Free Call</a>
+          <a href="#services" class="btn-white">See Our Services</a>
+        </div>
+        <div class="hero-trust fi">
+          <div class="trust-avatars">
+            <div class="trust-av">MB</div>
+            <div class="trust-av">BF</div>
+            <div class="trust-av">SP</div>
+            <div class="trust-av">M3</div>
+          </div>
+          <p class="trust-text"><strong>Trusted by 50+ businesses</strong> across London</p>
+        </div>
+      </div>
+      <div class="hero-cards fi">
+        <div class="hc hc-1">
+          <div class="hc-icon">⚡</div>
+          <h4>90-Min Response SLA</h4>
+          <p>Guaranteed response time on every ticket — no exceptions.</p>
+          <div class="hc-bar"><div class="hc-bar-fill" style="width:92%"></div></div>
+          <div style="font-size:0.72rem;color:var(--sub);margin-top:0.4rem;">SLA compliance: 98%</div>
+        </div>
+        <div class="hc hc-2">
+          <div class="hc-icon">🔒</div>
+          <h4>Security & Uptime</h4>
+          <p>Round-the-clock monitoring keeping your systems safe and online.</p>
+          <div class="hc-stat">
+            <span class="hc-stat-num">99.9%</span>
+            <span class="hc-stat-label">uptime achieved</span>
+          </div>
+        </div>
+        <div class="hc hc-3">
+          <div class="hc-icon">☁️</div>
+          <h4>Cloud & Microsoft 365</h4>
+          <p>Fully managed Microsoft 365 and cloud environments.</p>
+          <div class="hc-bar"><div class="hc-bar-fill" style="width:78%"></div></div>
+          <div style="font-size:0.72rem;color:var(--sub);margin-top:0.4rem;">Migration success rate: 100%</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SERVICES -->
+  <section id="services">
+    <div class="section-header-row">
+      <div class="fi">
+        <div class="s-label">Services</div>
+        <h2 class="s-title">Everything Your Business<br><span>Needs from IT</span></h2>
+      </div>
+      <p class="s-sub fi" style="max-width:320px;">One partner for every IT need — from the daily helpdesk to major projects.</p>
+    </div>
+    <div class="services-grid">
+      <div class="svc fi">
+        <div class="svc-icon-wrap">🖥️</div>
+        <h3>End User Helpdesk</h3>
+        <p>Fast, friendly support for your team — remote or on-site, no ticket queues.</p>
+        <a href="#" class="svc-link">Learn more →</a>
+      </div>
+      <div class="svc fi">
+        <div class="svc-icon-wrap">⚙️</div>
+        <h3>24/7 Systems Support</h3>
+        <p>Round-the-clock monitoring ensures critical infrastructure stays online.</p>
+        <a href="#" class="svc-link">Learn more →</a>
+      </div>
+      <div class="svc fi">
+        <div class="svc-icon-wrap">🔒</div>
+        <h3>Security & Backups</h3>
+        <p>Enterprise-grade data protection, disaster recovery and compliance.</p>
+        <a href="#" class="svc-link">Learn more →</a>
+      </div>
+      <div class="svc fi">
+        <div class="svc-icon-wrap">☁️</div>
+        <h3>Office 365 & Cloud</h3>
+        <p>Seamless Microsoft 365 migration, management and optimisation.</p>
+        <a href="#" class="svc-link">Learn more →</a>
+      </div>
+      <div class="svc fi">
+        <div class="svc-icon-wrap">📦</div>
+        <h3>Purchasing & Licensing</h3>
+        <p>Right hardware and software, best prices — managed end-to-end.</p>
+        <a href="#" class="svc-link">Learn more →</a>
+      </div>
+      <div class="svc fi">
+        <div class="svc-icon-wrap">🚀</div>
+        <h3>IT Project Delivery</h3>
+        <p>Office moves, upgrades, deployments — on time and on budget.</p>
+        <a href="#" class="svc-link">Learn more →</a>
+      </div>
+      <div class="svc fi">
+        <div class="svc-icon-wrap">🔗</div>
+        <h3>Service Integration</h3>
+        <p>We complement your team or act as your fully outsourced IT department.</p>
+        <a href="#" class="svc-link">Learn more →</a>
+      </div>
+      <div class="svc fi">
+        <div class="svc-icon-wrap">📊</div>
+        <h3>IT Management</h3>
+        <p>Strategic oversight, asset tracking and reporting aligned to your goals.</p>
+        <a href="#" class="svc-link">Learn more →</a>
+      </div>
+      <div class="svc fi">
+        <div class="svc-icon-wrap">🌐</div>
+        <h3>Comprehensive IT</h3>
+        <p>Networking, telephony, printers, mobiles — one partner for it all.</p>
+        <a href="#" class="svc-link">Learn more →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS BAND -->
+  <div id="stats-band">
+    <div class="stat-block fi"><div class="stat-num counter" data-target="90">0</div><div class="stat-label">Min SLA Response</div></div>
+    <div class="stat-block fi"><div class="stat-num">24/7</div><div class="stat-label">Systems Monitoring</div></div>
+    <div class="stat-block fi"><div class="stat-num counter" data-target="500">0</div><div class="stat-label">Users Supported</div></div>
+    <div class="stat-block fi"><div class="stat-num counter" data-target="15">0</div><div class="stat-label">Years Experience</div></div>
+  </div>
+
+  <!-- WHY -->
+  <section id="why">
+    <div class="section-header-row">
+      <div class="fi">
+        <div class="s-label">Why EC2IT</div>
+        <h2 class="s-title">IT Support That<br><span>Actually Delivers</span></h2>
+      </div>
+      <p class="s-sub fi" style="max-width:360px;">We don't just fix problems — we prevent them. Proactive, expert, always available.</p>
+    </div>
+    <div class="why-grid">
+      <div class="why-card fi">
+        <div class="why-icon">⚡</div>
+        <div><h3>90-Minute SLA Guarantee</h3><p>We respond within 90 minutes, every time. No exceptions, no small print.</p></div>
+      </div>
+      <div class="why-card fi">
+        <div class="why-icon">🎯</div>
+        <div><h3>No Tiered Support</h3><p>Straight to an engineer who can fix it — no scripted gatekeeping.</p></div>
+      </div>
+      <div class="why-card fi">
+        <div class="why-icon">🏙️</div>
+        <div><h3>London SME Specialists</h3><p>We understand the pace of a growing London business. Built for your scale.</p></div>
+      </div>
+      <div class="why-card fi">
+        <div class="why-icon">💼</div>
+        <div><h3>Dedicated Account Manager</h3><p>Someone who knows your business, your team and your IT inside out.</p></div>
+      </div>
+      <div class="why-card fi">
+        <div class="why-icon">🛡️</div>
+        <div><h3>Proactive Monitoring</h3><p>We catch issues before they affect your team — round-the-clock surveillance.</p></div>
+      </div>
+      <div class="why-card fi">
+        <div class="why-icon">✅</div>
+        <div><h3>Satisfaction Guarantee</h3><p>Transparent pricing, honest advice, no hidden costs. Satisfied or we fix it.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section id="testimonials">
+    <div class="section-header-row">
+      <div class="fi">
+        <div class="s-label">Client Stories</div>
+        <h2 class="s-title">Trusted by <span>London Businesses</span></h2>
+      </div>
+    </div>
+    <div class="t-grid">
+      <div class="t-card fi">
+        <div class="t-stars">★★★★★</div>
+        <q>Knowledgeable, attentive, polite and understand our business needs completely.</q>
+        <div class="t-author"><div class="t-av">MB</div><div><div class="t-name">Marks Barfield Architects</div><div class="t-co">Architecture & Design</div></div></div>
+      </div>
+      <div class="t-card fi">
+        <div class="t-stars">★★★★★</div>
+        <q>Peace of mind that we can still get IT help no matter what time — invaluable.</q>
+        <div class="t-author"><div class="t-av">BF</div><div><div class="t-name">B|FIN</div><div class="t-co">Financial Services</div></div></div>
+      </div>
+      <div class="t-card fi">
+        <div class="t-stars">★★★★★</div>
+        <q>A plethora of knowledge and proficiency — they understand our company culture.</q>
+        <div class="t-author"><div class="t-av">MS</div><div><div class="t-name">MuleSoft</div><div class="t-co">Technology</div></div></div>
+      </div>
+      <div class="t-card fi">
+        <div class="t-stars">★★★★★</div>
+        <q>Exceptional service over three years. They feel like part of our own IT team.</q>
+        <div class="t-author"><div class="t-av">SP</div><div><div class="t-name">Savannah Petroleum</div><div class="t-co">Energy</div></div></div>
+      </div>
+      <div class="t-card fi">
+        <div class="t-stars">★★★★★</div>
+        <q>Excellent and professional — all issues dealt with quickly and minimal disruption.</q>
+        <div class="t-author"><div class="t-av">IE</div><div><div class="t-name">InterExec Ltd</div><div class="t-co">Executive Search</div></div></div>
+      </div>
+      <div class="t-card fi">
+        <div class="t-stars">★★★★★</div>
+        <q>Everything just works. We have full confidence planning our IT around EC2IT.</q>
+        <div class="t-author"><div class="t-av">M3</div><div><div class="t-name">M3 Consulting</div><div class="t-co">Management Consulting</div></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PARTNERS -->
+  <section id="partners">
+    <p>Technology Partners & Vendors</p>
+    <div class="partner-row">
+      <span class="p-chip">Microsoft</span><span class="p-chip">Apple</span><span class="p-chip">Cisco</span>
+      <span class="p-chip">Dell</span><span class="p-chip">VMware</span><span class="p-chip">Adobe</span>
+      <span class="p-chip">Watchguard</span><span class="p-chip">Avaya</span><span class="p-chip">Xerox</span>
+      <span class="p-chip">Lenovo</span><span class="p-chip">ESET</span><span class="p-chip">Barracuda</span>
+      <span class="p-chip">Netgear</span><span class="p-chip">Sonicwall</span><span class="p-chip">APC</span>
+      <span class="p-chip">Canon</span><span class="p-chip">TeamViewer</span>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq">
+    <div style="text-align:center; margin-bottom:1rem;" class="fi">
+      <div class="s-label" style="display:inline-block;">FAQ</div>
+    </div>
+    <h2 class="s-title fi" style="text-align:center; margin-bottom:0.5rem;">Got <span>Questions?</span></h2>
+    <p class="s-sub fi" style="text-align:center; margin:0 auto 0;">Everything you need to know about working with EC2IT.</p>
+    <div class="faq-wrap">
+      <div class="faq-item fi">
+        <button class="faq-btn">How quickly will you respond to issues?<span class="faq-icon">+</span></button>
+        <div class="faq-body">We guarantee a response within 90 minutes. Most issues are resolved remotely in the same session. For on-site needs, we'll have an engineer with you same or next day.</div>
+      </div>
+      <div class="faq-item fi">
+        <button class="faq-btn">Do you use a tiered support structure?<span class="faq-icon">+</span></button>
+        <div class="faq-body">No. You speak directly with an engineer who has the expertise and authority to fix your problem — no scripted first-line gatekeeping, no bouncing around.</div>
+      </div>
+      <div class="faq-item fi">
+        <button class="faq-btn">What size businesses do you work with?<span class="faq-icon">+</span></button>
+        <div class="faq-body">We primarily support SMEs across London, giving them enterprise-quality IT support at a cost that makes sense for growing businesses.</div>
+      </div>
+      <div class="faq-item fi">
+        <button class="faq-btn">Can you support our existing IT team?<span class="faq-icon">+</span></button>
+        <div class="faq-body">Absolutely. We offer flexible models — from fully outsourced IT to supplementary support alongside your own team.</div>
+      </div>
+      <div class="faq-item fi">
+        <button class="faq-btn">Is support truly available 24/7?<span class="faq-icon">+</span></button>
+        <div class="faq-body">Yes. Systems monitoring and critical support runs around the clock — including weekends and bank holidays.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section id="cta">
+    <h2 class="fi">Ready to Transform Your IT?</h2>
+    <p class="fi">Schedule a free consultation. No obligation, just honest advice.</p>
+    <div class="cta-btns fi">
+      <a href="tel:02081424660" class="btn-white-solid">Call 020 8142 4660</a>
+      <a href="mailto:hello@ec2it.co.uk" class="btn-outline-white">hello@ec2it.co.uk</a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-grid">
+      <div>
+        <span class="footer-logo">EC2IT</span>
+        <p class="footer-desc">London's trusted IT support partner for growing businesses. Expert, responsive and always available.</p>
+        <div class="footer-info">📍 69 Old Broad Street, London, EC2M 1QS</div>
+        <div class="footer-info">📞 020 8142 4660</div>
+        <div class="footer-info">✉️ hello@ec2it.co.uk</div>
+      </div>
+      <div class="footer-col"><h4>Services</h4><ul><li><a href="#">Helpdesk Support</a></li><li><a href="#">24/7 Monitoring</a></li><li><a href="#">Cloud & O365</a></li><li><a href="#">Security & Backups</a></li><li><a href="#">IT Projects</a></li></ul></div>
+      <div class="footer-col"><h4>Company</h4><ul><li><a href="#">About Us</a></li><li><a href="#">News & Blog</a></li><li><a href="#">Testimonials</a></li><li><a href="#">Remote Support</a></li><li><a href="#">FAQ</a></li></ul></div>
+      <div class="footer-col"><h4>Contact</h4><ul><li><a href="#">Schedule a Call</a></li><li><a href="#">Get a Quote</a></li><li><a href="#">LinkedIn</a></li><li><a href="#">Twitter</a></li></ul></div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2024 EC2 IT Ltd. All rights reserved.</p>
+      <p>Privacy Policy · Terms of Service</p>
+    </div>
+  </footer>
+
+  <button class="float-btn" onclick="alert('Remote support would launch here')">🖥️ Get Support</button>
+
+  <script>
+    // Fade in
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e, i) => { if (e.isIntersecting) { setTimeout(() => e.target.classList.add('v'), i * 60); io.unobserve(e.target); } });
+    }, { threshold: 0.08 });
+    document.querySelectorAll('.fi').forEach(el => io.observe(el));
+
+    // Counters
+    const co = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          const t = parseInt(e.target.dataset.target), step = t / 55;
+          let c = 0;
+          const timer = setInterval(() => { c = Math.min(c + step, t); e.target.textContent = Math.floor(c) + (t === 90 ? '' : '+'); if (c >= t) clearInterval(timer); }, 22);
+          co.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.5 });
+    document.querySelectorAll('.counter').forEach(c => co.observe(c));
+
+    // FAQ
+    document.querySelectorAll('.faq-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const item = btn.parentElement, isOpen = item.classList.contains('open');
+        document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+        if (!isOpen) item.classList.add('open');
+      });
+    });
+  </script>
+</body>
+</html>
